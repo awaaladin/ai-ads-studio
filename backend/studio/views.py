@@ -3,12 +3,14 @@ import random
 import uuid
 from decimal import Decimal
 
+from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics, permissions, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from django.db.models import Sum
@@ -25,16 +27,38 @@ from .serializers import (
     ProjectSerializer,
 )
 from .services.assets import detect_file_type, extract_text_from_upload
+from django.db import connection
+
+from .services.audit import audit
 from .services.llm import LLMServiceError, generate_ad_copy, generate_ad_variants
+from .services.moderation import apply_disclaimer, moderate_text, moderate_variant
 from .services.pdf import generate_pdf
 from .services.storage import upload_file_to_storage
+from .services.usage import check_generation_quota, record_generation
 
 
 class HealthView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        return Response({"message": "AI Ads Studio API is running"})
+        payload = {
+            "status": "ok",
+            "message": "AI Ads Studio API is running",
+            "database": "unknown",
+            "ai": "configured" if settings.GROQ_API_KEY else "fallback_templates",
+        }
+        try:
+            connection.ensure_connection()
+            payload["database"] = "connected"
+        except Exception as exc:
+            payload["status"] = "degraded"
+            payload["database"] = str(exc)
+        code = status.HTTP_200_OK if payload["status"] == "ok" else status.HTTP_503_SERVICE_UNAVAILABLE
+        return Response(payload, status=code)
+
+
+class GenerateThrottle(ScopedRateThrottle):
+    scope = "generate"
 
 
 @extend_schema_view(
@@ -83,6 +107,7 @@ class ProjectDetailView(generics.RetrieveAPIView):
 class ProjectGenerateView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [GenerateThrottle]
 
     @extend_schema(
         summary="Generate ad creatives for a project",
@@ -90,6 +115,8 @@ class ProjectGenerateView(APIView):
         responses=AdCreativeSerializer,
     )
     def post(self, request, project_id):
+        if request.user.is_authenticated:
+            check_generation_quota(request.user)
         project = get_object_or_404(Project, id=project_id)
         if (
             request.user.is_authenticated
@@ -127,6 +154,15 @@ class ProjectGenerateView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
+        ad_copy = gen_result.get("ad_copy", "")
+        ok, reason = moderate_text(ad_copy)
+        if not ok:
+            return Response({"detail": reason}, status=status.HTTP_400_BAD_REQUEST)
+        for post in gen_result.get("social_posts", []) or []:
+            ok, reason = moderate_text(str(post))
+            if not ok:
+                return Response({"detail": reason}, status=status.HTTP_400_BAD_REQUEST)
+
         pdf_path = generate_pdf(
             project.business_name,
             project.colors,
@@ -141,10 +177,14 @@ class ProjectGenerateView(APIView):
 
         creative = AdCreative.objects.create(
             project=project,
-            copy=gen_result.get("ad_copy", ""),
+            copy=ad_copy,
             social_posts=gen_result.get("social_posts", []),
             pdf_brochure_url=pdf_url,
         )
+
+        if request.user.is_authenticated:
+            record_generation(request.user)
+            audit(request.user, "project.generate", "project", project_id)
 
         serializer = AdCreativeSerializer(creative, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -203,9 +243,11 @@ class AdBriefDetailView(generics.RetrieveAPIView):
 
 class AdBriefGenerateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [GenerateThrottle]
 
     @extend_schema(summary="Generate ad variants from brief", responses=AdVariantSerializer(many=True))
     def post(self, request, brief_id):
+        check_generation_quota(request.user)
         brief = get_object_or_404(AdBrief, id=brief_id)
         context = {
             "product_service": brief.product_service,
@@ -223,8 +265,12 @@ class AdBriefGenerateView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
+        variants_data = apply_disclaimer(variants_data)
         created = []
         for item in variants_data:
+            ok, reason = moderate_variant(item)
+            if not ok:
+                return Response({"detail": reason}, status=status.HTTP_400_BAD_REQUEST)
             variant = AdVariant.objects.create(
                 brief=brief,
                 headline=item.get("headline", ""),
@@ -234,6 +280,8 @@ class AdBriefGenerateView(APIView):
             )
             created.append(variant)
 
+        record_generation(request.user, count=len(created))
+        audit(request.user, "ad.generate", "ad_brief", brief_id, {"variants": len(created)})
         serializer = AdVariantSerializer(created, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

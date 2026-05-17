@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .legal_views import PrivacyView, TermsView
 from .views import (
     AdBriefDetailView,
     AdBriefGenerateView,
@@ -21,6 +22,8 @@ from .views import (
 
 urlpatterns = [
     path("", HealthView.as_view(), name="health"),
+    path("legal/terms/", TermsView.as_view(), name="api-legal-terms"),
+    path("legal/privacy/", PrivacyView.as_view(), name="api-legal-privacy"),
     path("dashboard/", DashboardView.as_view(), name="api-dashboard"),
     path("analytics/", AnalyticsView.as_view(), name="api-analytics"),
     path("ad-briefs/", AdBriefListCreateView.as_view(), name="api-ad-briefs"),

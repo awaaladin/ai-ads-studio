@@ -7,8 +7,6 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Maps signup.html: full name, work email, password."""
-
     username = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True, min_length=8)
@@ -63,8 +61,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class EmailLoginSerializer(TokenObtainPairSerializer):
-    """Maps signin.html: email + password."""
-
     username_field = User.USERNAME_FIELD
 
     def __init__(self, *args, **kwargs):
@@ -74,6 +70,8 @@ class EmailLoginSerializer(TokenObtainPairSerializer):
             del self.fields["username"]
 
     def validate(self, attrs):
+        from django.conf import settings
+
         email = attrs.pop("email", None)
         if email:
             try:
@@ -81,11 +79,76 @@ class EmailLoginSerializer(TokenObtainPairSerializer):
                 attrs[self.username_field] = getattr(user, self.username_field)
             except User.DoesNotExist:
                 raise serializers.ValidationError({"email": "No account with this email."}) from None
-        return super().validate(attrs)
+        data = super().validate(attrs)
+        if getattr(settings, "REQUIRE_EMAIL_VERIFICATION", False):
+            profile = getattr(self.user, "profile", None)
+            if profile and not profile.email_verified:
+                raise serializers.ValidationError(
+                    {"email": "Verify your email before signing in."}
+                )
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
+    email_verified = serializers.SerializerMethodField()
+    plan = serializers.SerializerMethodField()
+    generations_used = serializers.SerializerMethodField()
+    generations_limit = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "first_name", "last_name", "date_joined")
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "date_joined",
+            "email_verified",
+            "plan",
+            "generations_used",
+            "generations_limit",
+        )
         read_only_fields = fields
+
+    def _profile(self, obj):
+        return getattr(obj, "profile", None)
+
+    def get_email_verified(self, obj):
+        p = self._profile(obj)
+        return bool(p and p.email_verified)
+
+    def get_plan(self, obj):
+        p = self._profile(obj)
+        return p.plan if p else "free"
+
+    def get_generations_used(self, obj):
+        p = self._profile(obj)
+        if p:
+            p.reset_usage_if_needed()
+            return p.generations_this_month
+        return 0
+
+    def get_generations_limit(self, obj):
+        p = self._profile(obj)
+        return p.generation_limit if p else 25
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, min_length=8)
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password_confirm"]:
+            raise serializers.ValidationError({"password_confirm": "Passwords do not match."})
+        validate_password(attrs["password"])
+        return attrs
+
+
+class EmailVerifySerializer(serializers.Serializer):
+    token = serializers.CharField()

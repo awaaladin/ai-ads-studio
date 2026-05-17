@@ -68,8 +68,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+import sys
+
 DATABASE_URL = os.getenv("DATABASE_URL", "")
-if DATABASE_URL:
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+elif DATABASE_URL:
     import dj_database_url
 
     DATABASES = {
@@ -138,13 +147,22 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
     "EXCEPTION_HANDLER": "studio.exceptions.custom_exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": os.getenv("THROTTLE_ANON", "60/minute"),
+        "user": os.getenv("THROTTLE_USER", "120/minute"),
+        "auth_burst": os.getenv("THROTTLE_AUTH", "10/minute"),
+        "generate": os.getenv("THROTTLE_GENERATE", "30/hour"),
+    },
 }
 
 SIMPLE_JWT = {
@@ -169,3 +187,41 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_STORAGE_BUCKET = os.getenv("SUPABASE_STORAGE_BUCKET", "pdfs")
+
+# Production / compliance
+REQUIRE_EMAIL_VERIFICATION = os.getenv("REQUIRE_EMAIL_VERIFICATION", "false").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+GENERATION_LIMIT_FREE = int(os.getenv("GENERATION_LIMIT_FREE", "25"))
+GENERATION_LIMIT_PRO = int(os.getenv("GENERATION_LIMIT_PRO", "500"))
+PUBLIC_APP_URL = os.getenv("PUBLIC_APP_URL", "http://127.0.0.1:8000")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@aiads.studio")
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
+)
+
+# Security headers (enabled when DEBUG=false)
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    if not CORS_ALLOW_ALL_ORIGINS and CORS_ALLOWED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+if DEBUG and SECRET_KEY in ("", "change-me-in-production"):
+    pass
+elif SECRET_KEY in ("", "change-me-in-production"):
+    raise ValueError("DJANGO_SECRET_KEY must be set in production.")

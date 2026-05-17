@@ -24,6 +24,10 @@ Tokens from `POST /api/auth/login/` · Refresh via `POST /api/auth/refresh/`
 | GET | `https://ai-ads-studio-kappa.vercel.app/api/` | No |
 | GET | `https://ai-ads-studio-kappa.vercel.app/docs/` | No |
 | GET | `https://ai-ads-studio-kappa.vercel.app/api/schema/` | No |
+| GET | `https://ai-ads-studio-kappa.vercel.app/api/legal/terms/` | No |
+| GET | `https://ai-ads-studio-kappa.vercel.app/api/legal/privacy/` | No |
+
+Health check returns `status`, `database`, and `ai` (`configured` or `fallback_templates`).
 
 ---
 
@@ -36,6 +40,11 @@ Tokens from `POST /api/auth/login/` · Refresh via `POST /api/auth/refresh/`
 | POST | `https://ai-ads-studio-kappa.vercel.app/api/auth/refresh/` | No |
 | POST | `https://ai-ads-studio-kappa.vercel.app/api/auth/logout/` | Yes |
 | GET | `https://ai-ads-studio-kappa.vercel.app/api/auth/me/` | Yes |
+| POST | `https://ai-ads-studio-kappa.vercel.app/api/auth/password-reset/` | No |
+| POST | `https://ai-ads-studio-kappa.vercel.app/api/auth/password-reset/confirm/` | No |
+| POST | `https://ai-ads-studio-kappa.vercel.app/api/auth/verify-email/` | No |
+
+`GET /api/auth/me/` includes `plan`, `generations_this_month`, and `generation_limit`. Set `REQUIRE_EMAIL_VERIFICATION=true` in production when SMTP is configured.
 
 ---
 
