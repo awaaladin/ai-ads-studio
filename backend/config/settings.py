@@ -71,11 +71,20 @@ WSGI_APPLICATION = "config.wsgi.application"
 import sys
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
+USE_SQLITE = os.getenv("USE_SQLITE", "").lower() in ("1", "true", "yes")
+
 if "test" in sys.argv:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": ":memory:",
+        }
+    }
+elif USE_SQLITE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 elif DATABASE_URL:
@@ -86,13 +95,6 @@ elif DATABASE_URL:
             default=DATABASE_URL,
             conn_max_age=600,
         )
-    }
-elif os.getenv("USE_SQLITE", "").lower() in ("1", "true", "yes"):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
     }
 else:
     DATABASES = {
