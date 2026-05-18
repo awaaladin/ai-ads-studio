@@ -1,4 +1,9 @@
+import logging
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
+from django.db.utils import DatabaseError
 from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -7,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from accounts.models import EmailVerificationToken, PasswordResetToken
+from accounts.models import EmailVerificationToken, PasswordResetToken, UserProfile
 from accounts.services.email import send_password_reset_email, send_verification_email
 from studio.services.audit import audit
 
@@ -21,6 +26,7 @@ from .serializers import (
 )
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class AuthBurstThrottle(ScopedRateThrottle):
@@ -34,10 +40,43 @@ class RegisterView(generics.CreateAPIView):
     throttle_classes = [AnonRateThrottle, AuthBurstThrottle]
     throttle_scope = "auth_burst"
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            with transaction.atomic():
+                self.perform_create(serializer)
+        except IntegrityError:
+            return Response(
+                {"email": ["An account with this email already exists."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except DatabaseError as exc:
+            logger.exception("register database error")
+            detail = (
+                str(exc)
+                if settings.DEBUG
+                else "Database is not ready. Run migrations on your production database (see docs/PRODUCTION.md)."
+            )
+            return Response(
+                {"error": detail, "detail": detail},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        except Exception:
+            logger.exception("register failed")
+            raise
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         user = serializer.save()
-        token = EmailVerificationToken.create_for_user(user)
-        send_verification_email(user, token.token)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if settings.DEBUG or not getattr(settings, "REQUIRE_EMAIL_VERIFICATION", False):
+            profile.email_verified = True
+            profile.save(update_fields=["email_verified"])
+        else:
+            token = EmailVerificationToken.create_for_user(user)
+            send_verification_email(user, token.token)
         audit(user, "user.register", "user", user.pk)
 
 
@@ -92,7 +131,9 @@ class MeView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user
+        user = self.request.user
+        UserProfile.objects.get_or_create(user=user)
+        return user
 
 
 class PasswordResetRequestView(APIView):

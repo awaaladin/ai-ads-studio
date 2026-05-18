@@ -1,7 +1,12 @@
-from django.conf import settings
 from rest_framework.exceptions import Throttled
 
 from accounts.models import UserProfile
+
+
+class UsageLimitExceeded(Throttled):
+    status_code = 429
+    default_detail = "Usage limit reached. Upgrade required."
+    default_code = "usage_limit_exceeded"
 
 
 def get_or_create_profile(user) -> UserProfile:
@@ -14,13 +19,8 @@ def check_generation_quota(user) -> UserProfile:
     if not user.is_authenticated:
         return None
     profile = get_or_create_profile(user)
-    if profile.generations_this_month >= profile.generation_limit:
-        raise Throttled(
-            detail=(
-                f"Monthly generation limit reached ({profile.generation_limit}). "
-                "Upgrade plan or wait until next billing period."
-            )
-        )
+    if profile.plan != UserProfile.PLAN_PRO and profile.generations_this_month >= profile.generation_limit:
+        raise UsageLimitExceeded()
     return profile
 
 
@@ -30,3 +30,12 @@ def record_generation(user, count: int = 1) -> None:
     profile = get_or_create_profile(user)
     profile.generations_this_month += count
     profile.save(update_fields=["generations_this_month"])
+
+
+def user_can_generate(user) -> bool:
+    if not user or not user.is_authenticated:
+        return True
+    profile = get_or_create_profile(user)
+    if profile.plan == UserProfile.PLAN_PRO:
+        return True
+    return profile.generations_this_month < profile.generation_limit

@@ -42,6 +42,30 @@ After your first deploy, add your exact hostname to `DJANGO_ALLOWED_HOSTS`, e.g.
 
 ---
 
+## Run migrations on Supabase (fixes register 500)
+
+Vercel build may **not** apply migrations to your real database if `DATABASE_URL` was missing at build time.  
+If `POST /api/auth/register/` returns **500**, run this **once** from your PC:
+
+```powershell
+cd backend
+$env:DATABASE_URL = "postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT.supabase.co:5432/postgres?sslmode=require"
+$env:DJANGO_SECRET_KEY = "same-secret-as-vercel"
+$env:DJANGO_DEBUG = "false"
+python manage.py migrate
+```
+
+Then test:
+
+```powershell
+$body = '{"email":"you@test.com","password":"TestPass123!","password_confirm":"TestPass123!"}'
+Invoke-RestMethod -Uri "https://ai-ads-studio-kappa.vercel.app/api/auth/register/" -Method POST -Body $body -ContentType "application/json"
+```
+
+`GET /api/` should return `"database": "connected"` after you redeploy the latest backend.
+
+---
+
 ## Vercel project settings
 
 | Setting | Value |

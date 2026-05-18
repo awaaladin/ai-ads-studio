@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AdBrief, AdCreative, AdVariant, Asset, Campaign, Notification, Project
+from .models import AdBrief, AdCreative, AdVariant, Asset, Campaign, GenerationRecord, Notification, Project
 
 PLATFORM_ALIASES = {
     "friendly": "meta",
@@ -128,6 +128,9 @@ class AdBriefCreateSerializer(serializers.ModelSerializer):
 
 
 class AdVariantSerializer(serializers.ModelSerializer):
+    primary_text = serializers.CharField(source="body", read_only=True)
+    call_to_action = serializers.CharField(source="cta", read_only=True)
+
     class Meta:
         model = AdVariant
         fields = (
@@ -135,8 +138,26 @@ class AdVariantSerializer(serializers.ModelSerializer):
             "brief_id",
             "headline",
             "body",
+            "primary_text",
             "cta",
+            "call_to_action",
             "platform",
+            "created_at",
+        )
+        read_only_fields = fields
+
+
+class GenerationRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GenerationRecord
+        fields = (
+            "id",
+            "source_type",
+            "source_id",
+            "input_data",
+            "output_data",
+            "variant_count",
+            "status",
             "created_at",
         )
         read_only_fields = fields

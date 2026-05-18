@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
+from accounts.models import UserProfile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
@@ -78,13 +80,38 @@ class EmailLoginSerializer(TokenObtainPairSerializer):
                 user = User.objects.get(email__iexact=email)
                 attrs[self.username_field] = getattr(user, self.username_field)
             except User.DoesNotExist:
-                raise serializers.ValidationError({"email": "No account with this email."}) from None
-        data = super().validate(attrs)
-        if getattr(settings, "REQUIRE_EMAIL_VERIFICATION", False):
-            profile = getattr(self.user, "profile", None)
-            if profile and not profile.email_verified:
                 raise serializers.ValidationError(
-                    {"email": "Verify your email before signing in."}
+                    {
+                        "email": "No account with this email. Sign up first on this server.",
+                        "error": "No account with this email. Sign up first on this server.",
+                    }
+                ) from None
+        try:
+            data = super().validate(attrs)
+        except serializers.ValidationError as exc:
+            detail = exc.detail
+            if isinstance(detail, dict) and "error" not in detail:
+                non_field = detail.get("non_field_errors") or detail.get("detail")
+                if non_field:
+                    msg = non_field[0] if isinstance(non_field, list) else str(non_field)
+                    raise serializers.ValidationError(
+                        {**detail, "error": "Invalid email or password."}
+                    ) from exc
+                raise serializers.ValidationError(
+                    {**detail, "error": "Invalid email or password."}
+                ) from exc
+            raise
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        if settings.DEBUG and not profile.email_verified:
+            profile.email_verified = True
+            profile.save(update_fields=["email_verified"])
+        if getattr(settings, "REQUIRE_EMAIL_VERIFICATION", False):
+            if not profile.email_verified:
+                raise serializers.ValidationError(
+                    {
+                        "email": "Verify your email before signing in.",
+                        "error": "Verify your email before signing in.",
+                    }
                 )
         return data
 

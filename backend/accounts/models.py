@@ -23,7 +23,9 @@ class UserProfile(models.Model):
     email_verified = models.BooleanField(default=False)
     plan = models.CharField(max_length=16, choices=PLAN_CHOICES, default=PLAN_FREE)
     generations_this_month = models.PositiveIntegerField(default=0)
-    billing_period_start = models.DateField(default=timezone.now)
+    billing_period_start = models.DateField(default=timezone.localdate)
+    stripe_customer_id = models.CharField(max_length=255, blank=True, default="", db_index=True)
+    stripe_subscription_id = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:
         indexes = [models.Index(fields=["plan"])]

@@ -193,3 +193,43 @@ class AuditLog(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class GenerationRecord(models.Model):
+    """Persisted history of every successful generation (SaaS value + billing audit)."""
+
+    STATUS_SUCCESS = "success"
+    STATUS_FAILURE = "failure"
+    STATUS_CHOICES = [
+        (STATUS_SUCCESS, "Success"),
+        (STATUS_FAILURE, "Failure"),
+    ]
+
+    SOURCE_BRIEF = "ad_brief"
+    SOURCE_PROJECT = "project"
+    SOURCE_CHOICES = [
+        (SOURCE_BRIEF, "Ad brief"),
+        (SOURCE_PROJECT, "Project"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="generation_records",
+    )
+    source_type = models.CharField(max_length=32, choices=SOURCE_CHOICES)
+    source_id = models.UUIDField()
+    input_data = models.JSONField(default=dict)
+    output_data = models.JSONField(default=dict)
+    variant_count = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_SUCCESS)
+    error_message = models.CharField(max_length=512, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["source_type", "source_id"]),
+        ]

@@ -41,7 +41,24 @@ AI Ads Studio backend is deployable on **Vercel** (current instructor setup), **
    python manage.py migrate
    ```
 
-4. Smoke test: `GET /api/` should return `status: ok` and `database: connected`.
+4. **If Vercel build did not migrate Supabase**, run once from your PC:
+
+   ```powershell
+   cd backend
+   $env:DATABASE_URL = "postgresql://..."   # same as Vercel
+   $env:DJANGO_SECRET_KEY = "same-as-vercel"
+   .\scripts\migrate-production.ps1
+   ```
+
+5. Redeploy after pushing (needs **WhiteNoise** for `/static/rest_framework/` on `/docs/`).
+
+6. Smoke test: `GET /api/` should return:
+
+   ```json
+   { "status": "ok", "database": "connected", "migrations": "applied" }
+   ```
+
+   If `"migrations": "pending"`, run step 4 again.
 
 ## Security checklist
 

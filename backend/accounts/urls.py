@@ -1,5 +1,11 @@
 from django.urls import path
 
+from .billing_views import (
+    BillingCheckoutView,
+    BillingPortalView,
+    BillingStatusView,
+    StripeWebhookView,
+)
 from .views import (
     EmailVerifyView,
     LoginView,
@@ -24,4 +30,8 @@ urlpatterns = [
         name="auth-password-reset-confirm",
     ),
     path("verify-email/", EmailVerifyView.as_view(), name="auth-verify-email"),
+    path("billing/status/", BillingStatusView.as_view(), name="billing-status"),
+    path("billing/checkout/", BillingCheckoutView.as_view(), name="billing-checkout"),
+    path("billing/portal/", BillingPortalView.as_view(), name="billing-portal"),
+    path("billing/webhook/", StripeWebhookView.as_view(), name="billing-webhook"),
 ]

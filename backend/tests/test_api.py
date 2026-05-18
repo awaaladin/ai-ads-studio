@@ -102,3 +102,62 @@ class QuotaTests(TestCase):
 
         gen = client.post(f"/api/ad-briefs/{brief_id}/generate/")
         self.assertEqual(gen.status_code, 429)
+        body = gen.json()
+        self.assertIn("error", body)
+        self.assertIn("Upgrade", body["error"])
+
+
+class OutputCleanerTests(TestCase):
+    def test_normalizes_primary_text_fields(self):
+        from studio.services.output_cleaner import normalize_variant
+
+        result = normalize_variant(
+            {
+                "headline": "Summer Sale",
+                "primary_text": "Save 20% this week only.",
+                "call_to_action": "Shop Now",
+            }
+        )
+        self.assertEqual(result["headline"], "Summer Sale")
+        self.assertEqual(result["body"], "Save 20% this week only.")
+        self.assertEqual(result["cta"], "Shop Now")
+
+
+class BillingStatusTests(TestCase):
+    def test_billing_status_authenticated(self):
+        user = User.objects.create_user(
+            email="billing@example.com",
+            username="billing@example.com",
+            password="SecurePass123!",
+        )
+        client = APIClient()
+        login = client.post(
+            "/api/auth/login/",
+            {"email": user.email, "password": "SecurePass123!"},
+            format="json",
+        )
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {login.json()['access']}")
+        res = client.get("/api/auth/billing/status/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["plan"], "free")
+        self.assertIn("generations_limit", res.json())
+
+
+class AnalyticsDemoTests(TestCase):
+    def test_analytics_marked_as_demo(self):
+        user = User.objects.create_user(
+            email="demo@example.com",
+            username="demo@example.com",
+            password="SecurePass123!",
+        )
+        client = APIClient()
+        login = client.post(
+            "/api/auth/login/",
+            {"email": user.email, "password": "SecurePass123!"},
+            format="json",
+        )
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {login.json()['access']}")
+        response = client.get("/api/analytics/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["demo_mode"])
+        self.assertEqual(response.json()["metrics_source"], "simulated")

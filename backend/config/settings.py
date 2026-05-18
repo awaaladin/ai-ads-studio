@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -133,6 +134,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+# Serve DRF admin/docs assets on Vercel (collectstatic runs in vercel.json buildCommand)
+WHITENOISE_USE_FINDERS = DEBUG
+WHITENOISE_MAX_AGE = 60 * 60 * 24 * 30 if not DEBUG else 0
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -196,9 +210,21 @@ REQUIRE_EMAIL_VERIFICATION = os.getenv("REQUIRE_EMAIL_VERIFICATION", "false").lo
     "true",
     "yes",
 )
-GENERATION_LIMIT_FREE = int(os.getenv("GENERATION_LIMIT_FREE", "25"))
+GENERATION_LIMIT_FREE = int(os.getenv("GENERATION_LIMIT_FREE", "10"))
 GENERATION_LIMIT_PRO = int(os.getenv("GENERATION_LIMIT_PRO", "500"))
+GENERATION_VARIANT_COUNT = int(os.getenv("GENERATION_VARIANT_COUNT", "4"))
+GROQ_TIMEOUT_SECONDS = int(os.getenv("GROQ_TIMEOUT_SECONDS", "45"))
+GENERATION_LOCK_SECONDS = int(os.getenv("GENERATION_LOCK_SECONDS", "15"))
 PUBLIC_APP_URL = os.getenv("PUBLIC_APP_URL", "http://127.0.0.1:8000")
+
+# Stripe (product billing — optional until keys are set)
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_PRICE_ID_PRO = os.getenv("STRIPE_PRICE_ID_PRO", "")
+STRIPE_PRO_PRICE_USD = int(os.getenv("STRIPE_PRO_PRICE_USD", "29"))
+STRIPE_SUCCESS_URL = os.getenv("STRIPE_SUCCESS_URL", "")
+STRIPE_CANCEL_URL = os.getenv("STRIPE_CANCEL_URL", "")
+STRIPE_PORTAL_RETURN_URL = os.getenv("STRIPE_PORTAL_RETURN_URL", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@aiads.studio")
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
@@ -227,3 +253,31 @@ if DEBUG and SECRET_KEY in ("", "change-me-in-production"):
     pass
 elif SECRET_KEY in ("", "change-me-in-production"):
     raise ValueError("DJANGO_SECRET_KEY must be set in production.")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "aiads-studio",
+    }
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "studio.generation": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "studio.audit": {"handlers": ["console"], "level": "INFO", "propagate": False},
+    },
+}
