@@ -68,12 +68,13 @@ class AuthTests(TestCase):
 
     def test_register_weak_password_returns_400_not_500(self):
         client = APIClient()
+        # "stringst" passes validators; "password" fails CommonPasswordValidator → must be 400 not 500
         reg = client.post(
             "/api/auth/register/",
             {
                 "email": "weak@example.com",
-                "password": "stringst",
-                "password_confirm": "stringst",
+                "password": "password",
+                "password_confirm": "password",
             },
             format="json",
         )
