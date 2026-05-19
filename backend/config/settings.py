@@ -118,6 +118,10 @@ if os.getenv("VERCEL") or os.getenv("VERCEL_ENV"):
     if _vercel_host:
         ALLOWED_HOSTS.append(_vercel_host.removeprefix("https://").removeprefix("http://"))
     SERVE_FRONTEND = os.getenv("SERVE_FRONTEND", "false").lower() in ("1", "true", "yes")
+    if not DATABASE_URL and not USE_SQLITE:
+        raise ValueError(
+            "DATABASE_URL must be set in Vercel Environment Variables (Supabase connection string)."
+        )
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

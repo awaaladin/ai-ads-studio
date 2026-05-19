@@ -62,9 +62,17 @@ class RegisterView(generics.CreateAPIView):
                 {"error": detail, "detail": detail},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
-        except Exception:
+        except Exception as exc:
             logger.exception("register failed")
-            raise
+            detail = str(exc) if settings.DEBUG else "Registration failed. Check server logs."
+            return Response(
+                {
+                    "error": detail,
+                    "detail": detail,
+                    "error_type": exc.__class__.__name__,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

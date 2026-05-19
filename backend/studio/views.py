@@ -64,6 +64,7 @@ class HealthView(APIView):
         payload = {
             "status": "ok",
             "message": "AI Ads Studio API is running",
+            "version": os.getenv("VERCEL_GIT_COMMIT_SHA", "local")[:12],
             "database": "unknown",
             "migrations": "unknown",
             "ai": "configured" if settings.GROQ_API_KEY else "fallback_templates",

@@ -1,6 +1,12 @@
+import logging
+import os
+
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
+
+logger = logging.getLogger(__name__)
 
 
 def _normalize_errors(data):
@@ -22,7 +28,15 @@ def custom_exception_handler(exc, context):
         if isinstance(response.data, dict):
             response.data = _normalize_errors(response.data)
         return response
-    return Response(
-        {"error": "An unexpected server error occurred.", "detail": "An unexpected server error occurred."},
-        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    )
+
+    logger.exception("Unhandled API error")
+    detail = "An unexpected server error occurred."
+    payload = {
+        "error": detail,
+        "detail": detail,
+        "error_type": exc.__class__.__name__,
+    }
+    if settings.DEBUG or os.getenv("EXPOSE_API_ERRORS", "").lower() in ("1", "true", "yes"):
+        payload["debug"] = str(exc)[:500]
+
+    return Response(payload, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
