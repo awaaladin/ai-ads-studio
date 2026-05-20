@@ -205,9 +205,9 @@ class Command(BaseCommand):
                 )
             load_static = "{% load static %}\n" if src_name == "landing.html" else ""
             out = (
-                load_static
-                + "{% extends \"web/base_simple.html\" %}\n"
-                "{% block title %}" + page_title + "{% endblock %}\n"
+                "{% extends \"web/base_simple.html\" %}\n"
+                + load_static
+                + "{% block title %}" + page_title + "{% endblock %}\n"
                 + extra_head
                 + "{% block body %}\n"
                 f"{body}\n"
