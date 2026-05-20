@@ -30,6 +30,7 @@ URL_MAP = {
 STATIC_MAP = {
     'href="/favicon.svg"': 'href="{% static \'web/favicon.svg\' %}"',
     'href="/studio.css"': 'href="{% static \'web/studio.css\' %}"',
+    'href="/landing.css"': 'href="{% static \'web/landing.css\' %}"',
     'href="/studio.css" />': 'href="{% static \'web/studio.css\' %}" />',
     'src="/config.js"': '',
     'src="/ui.js"': '',
@@ -101,6 +102,7 @@ class Command(BaseCommand):
 
         for name in (
             "studio.css",
+            "landing.css",
             "ui.js",
             "auth.js",
             "app.js",
@@ -191,10 +193,23 @@ class Command(BaseCommand):
             html = src.read_text(encoding="utf-8", errors="replace")
             body_m = re.search(r"<body[^>]*>(.*)</body>", html, re.DOTALL | re.IGNORECASE)
             body = _patch(body_m.group(1).strip() if body_m else html)
+            extra_head = ""
+            if src_name == "landing.html":
+                extra_head = (
+                    "{% block extra_head %}\n"
+                    "  <link rel=\"stylesheet\" href=\"{% static 'web/landing.css' %}\" />\n"
+                    "  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n"
+                    "  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\" />\n"
+                    "{% endblock %}\n"
+                    "{% block body_class %}bg-white min-h-screen{% endblock %}\n"
+                )
+            load_static = "{% load static %}\n" if src_name == "landing.html" else ""
             out = (
-                "{% extends \"web/base_simple.html\" %}\n"
+                load_static
+                + "{% extends \"web/base_simple.html\" %}\n"
                 "{% block title %}" + page_title + "{% endblock %}\n"
-                "{% block body %}\n"
+                + extra_head
+                + "{% block body %}\n"
                 f"{body}\n"
                 "{% endblock %}\n"
             )
