@@ -1,43 +1,54 @@
 /**
- * Smooth scroll-linked gradient: blue emphasis at top → purple mid → fades with scroll.
+ * Scroll-linked fade + gentle phase drift for hero color field.
  */
 (function () {
-  const root = document.querySelector(".landing-page");
   const ambient = document.querySelector(".landing-ambient");
-  if (!root || !ambient) return;
+  const hero = document.querySelector(".landing-hero");
+  if (!ambient) return;
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let target = 0;
-  let current = 0;
-  let raf = 0;
+  let scrollTarget = 0;
+  let scrollCurrent = 0;
+  let scrollRaf = 0;
+  let timeRaf = 0;
+  const start = performance.now();
 
-  function measure() {
-    const max = Math.max(
-      1,
-      document.documentElement.scrollHeight - window.innerHeight
-    );
-    target = Math.min(1, Math.max(0, window.scrollY / max));
+  function measureScroll() {
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    scrollTarget = Math.min(1, Math.max(0, window.scrollY / max));
   }
 
-  function tick() {
-    current += (target - current) * 0.08;
-    if (Math.abs(target - current) < 0.0008) current = target;
-    ambient.style.setProperty("--scroll", current.toFixed(4));
-    if (Math.abs(target - current) > 0.0008) {
-      raf = requestAnimationFrame(tick);
+  function tickScroll() {
+    scrollCurrent += (scrollTarget - scrollCurrent) * 0.07;
+    if (Math.abs(scrollTarget - scrollCurrent) < 0.0006) scrollCurrent = scrollTarget;
+    ambient.style.setProperty("--scroll", scrollCurrent.toFixed(4));
+    if (Math.abs(scrollTarget - scrollCurrent) > 0.0006) {
+      scrollRaf = requestAnimationFrame(tickScroll);
     } else {
-      raf = 0;
+      scrollRaf = 0;
     }
   }
 
   function onScroll() {
-    measure();
-    if (!raf) raf = requestAnimationFrame(tick);
+    measureScroll();
+    if (!scrollRaf) scrollRaf = requestAnimationFrame(tickScroll);
+  }
+
+  function tickTime(now) {
+    if (!reduced && hero) {
+      const t = (now - start) * 0.001;
+      const phase = (Math.sin(t * 0.35) + 1) * 0.5;
+      const phase2 = (Math.sin(t * 0.22 + 1.2) + 1) * 0.5;
+      hero.style.setProperty("--wave-a", phase.toFixed(4));
+      hero.style.setProperty("--wave-b", phase2.toFixed(4));
+    }
+    timeRaf = requestAnimationFrame(tickTime);
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
-  measure();
+  measureScroll();
   ambient.style.setProperty("--scroll", "0");
+  if (!reduced) timeRaf = requestAnimationFrame(tickTime);
 })();

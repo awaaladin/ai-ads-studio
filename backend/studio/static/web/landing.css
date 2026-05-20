@@ -1,4 +1,4 @@
-/* Marketing landing — gradient hero & smooth scroll flow */
+/* Marketing landing — swirling blue/purple hero & smooth scroll */
 html {
   scroll-behavior: smooth;
 }
@@ -17,39 +17,37 @@ html {
   isolation: isolate;
 }
 
-/* Scroll-linked ambient wash (blue → purple → fades out) */
+/* Scroll-linked page wash — richer, still fades to white */
 .landing-ambient {
   position: fixed;
-  inset: -20% -15% 0;
+  inset: -25% -20% 0;
   z-index: 0;
   pointer-events: none;
   --scroll: 0;
-  --hero-phase: 0;
   background:
     radial-gradient(
-      ellipse 90% 55% at calc(42% + var(--scroll) * 12%) calc(8% + var(--scroll) * 18%),
-      rgb(37 99 235 / 0.22) 0%,
-      transparent 62%
-    ),
-    radial-gradient(
-      ellipse 75% 50% at calc(58% - var(--scroll) * 8%) calc(22% + var(--scroll) * 14%),
-      rgb(124 58 237 / 0.16) 0%,
+      ellipse 95% 60% at calc(40% + var(--scroll) * 10%) calc(6% + var(--scroll) * 16%),
+      rgb(37 99 235 / 0.38) 0%,
       transparent 58%
     ),
     radial-gradient(
-      ellipse 100% 70% at 50% calc(35% + var(--scroll) * 25%),
-      rgb(168 85 247 / calc(0.12 - var(--scroll) * 0.08)) 0%,
-      transparent 72%
+      ellipse 80% 55% at calc(62% - var(--scroll) * 6%) calc(18% + var(--scroll) * 12%),
+      rgb(99 102 241 / 0.32) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 90% 65% at calc(52% + var(--scroll) * 8%) calc(30% + var(--scroll) * 20%),
+      rgb(124 58 237 / calc(0.28 - var(--scroll) * 0.12)) 0%,
+      transparent 60%
     ),
     linear-gradient(
       180deg,
-      rgb(239 246 255 / calc(0.85 - var(--scroll) * 0.35)) 0%,
-      rgb(237 233 254 / calc(0.45 - var(--scroll) * 0.3)) 28%,
-      rgb(255 255 255 / calc(1 - var(--scroll) * 0.15)) 55%,
-      #fff 100%
+      rgb(224 231 255 / calc(0.75 - var(--scroll) * 0.4)) 0%,
+      rgb(237 233 254 / calc(0.5 - var(--scroll) * 0.35)) 32%,
+      #fff 72%
     );
-  opacity: calc(1 - var(--scroll) * 0.92);
-  transform: translate3d(0, calc(var(--scroll) * -6vh), 0);
+  opacity: calc(1 - var(--scroll) * 0.88);
+  transform: translate3d(0, calc(var(--scroll) * -5vh), 0);
   will-change: transform, opacity;
 }
 
@@ -64,80 +62,199 @@ html {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgb(255 255 255 / 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgb(241 245 249 / 0.6);
+  background: rgb(255 255 255 / 0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgb(199 210 254 / 0.35);
 }
 
-/* Hero: animated blue ↔ purple mesh + soft bottom fade (no hard edge) */
+/* Hero: calm water-like swirling color field */
 .landing-hero {
   position: relative;
   overflow: hidden;
   padding-bottom: 4rem;
+  --wave-a: 0.5;
+  --wave-b: 0.5;
+  background: linear-gradient(
+    165deg,
+    #dce4ff 0%,
+    #e4e0ff calc(28% + var(--wave-a) * 8%),
+    #ede9fe calc(55% + var(--wave-b) * 6%),
+    #f5f3ff 100%
+  );
 }
 
-.landing-hero-glow {
+.landing-hero-surface {
   position: absolute;
-  inset: -30% -20% 0;
+  inset: -35% -25% -15%;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    #2563eb 0%,
-    #4f46e5 38%,
-    #7c3aed 62%,
-    #a855f7 100%
+  overflow: hidden;
+  transform: translate(
+    calc((var(--wave-a, 0.5) - 0.5) * 5%),
+    calc((var(--wave-b, 0.5) - 0.5) * 4%)
   );
-  background-size: 200% 200%;
-  opacity: 0.14;
-  filter: blur(72px);
-  animation: landing-hero-shift 24s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  transition: transform 0.6s ease-out;
 }
 
-.landing-hero-glow::before,
-.landing-hero-glow::after {
-  content: "";
+/* Slow rotating color wheel — blurred into soft swirl */
+.landing-hero-mesh {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 140vmin;
+  height: 140vmin;
+  margin-left: -70vmin;
+  margin-top: -70vmin;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #2563eb 0deg,
+    #4f46e5 72deg,
+    #6366f1 140deg,
+    #7c3aed 210deg,
+    #9333ea 280deg,
+    #6366f1 320deg,
+    #2563eb 360deg
+  );
+  opacity: 0.42;
+  filter: blur(56px) saturate(1.15);
+  animation: landing-mesh-spin 36s linear infinite;
+}
+
+/* Orbiting color blobs — mature, smooth, visible */
+.landing-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(64px);
-  animation: landing-hero-drift 28s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  filter: blur(52px) saturate(1.2);
+  mix-blend-mode: multiply;
+  opacity: 0.72;
+  will-change: transform;
 }
 
-.landing-hero-glow::before {
-  width: 55%;
-  height: 45%;
-  left: 5%;
-  top: 0;
-  background: radial-gradient(circle, rgb(59 130 246 / 0.55) 0%, transparent 68%);
-  animation-delay: 0s;
+.landing-blob--blue {
+  width: 52vmin;
+  height: 44vmin;
+  left: 18%;
+  top: 8%;
+  background: radial-gradient(circle at 40% 40%, #3b82f6 0%, #2563eb 45%, transparent 72%);
+  animation: landing-swirl-a 26s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.landing-hero-glow::after {
-  width: 50%;
-  height: 42%;
-  right: 0;
-  top: 12%;
-  background: radial-gradient(circle, rgb(139 92 246 / 0.5) 0%, transparent 70%);
-  animation-delay: -14s;
-  animation-direction: reverse;
+.landing-blob--indigo {
+  width: 48vmin;
+  height: 40vmin;
+  left: 48%;
+  top: 2%;
+  background: radial-gradient(circle at 50% 50%, #6366f1 0%, #4f46e5 50%, transparent 70%);
+  animation: landing-swirl-b 32s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: -8s;
+  opacity: 0.65;
 }
 
-/* Feather hero into page — no visible cutoff line */
+.landing-blob--purple {
+  width: 50vmin;
+  height: 46vmin;
+  right: 8%;
+  top: 18%;
+  background: radial-gradient(circle at 55% 45%, #8b5cf6 0%, #7c3aed 48%, transparent 74%);
+  animation: landing-swirl-c 29s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: -16s;
+}
+
+.landing-blob--violet {
+  width: 44vmin;
+  height: 38vmin;
+  left: 32%;
+  top: 28%;
+  background: radial-gradient(circle at 50% 50%, #a855f7 0%, #9333ea 42%, transparent 68%);
+  animation: landing-swirl-d 34s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: -22s;
+  opacity: 0.58;
+}
+
+@keyframes landing-mesh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Orbital paths — fluid circular drift */
+@keyframes landing-swirl-a {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(8%, 6%) scale(1.06);
+  }
+  50% {
+    transform: translate(14%, -2%) scale(1.02);
+  }
+  75% {
+    transform: translate(4%, -8%) scale(0.98);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes landing-swirl-b {
+  0% {
+    transform: translate(0, 0) scale(1.02);
+  }
+  33% {
+    transform: translate(-12%, 8%) scale(1.08);
+  }
+  66% {
+    transform: translate(-6%, -6%) scale(0.96);
+  }
+  100% {
+    transform: translate(0, 0) scale(1.02);
+  }
+}
+
+@keyframes landing-swirl-c {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-10%, 4%) scale(1.1);
+  }
+  70% {
+    transform: translate(-4%, 10%) scale(1.04);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes landing-swirl-d {
+  0% {
+    transform: translate(0, 0) scale(0.98);
+  }
+  50% {
+    transform: translate(10%, -10%) scale(1.12);
+  }
+  100% {
+    transform: translate(0, 0) scale(0.98);
+  }
+}
+
+/* Soft fade into white — no hard line */
 .landing-hero::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: min(42vh, 320px);
+  height: min(38vh, 280px);
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgb(255 255 255 / 0.35) 35%,
-    rgb(255 255 255 / 0.82) 68%,
+    rgb(248 250 252 / 0.25) 40%,
+    rgb(255 255 255 / 0.75) 75%,
     #fff 100%
   );
 }
@@ -151,43 +268,18 @@ html {
   background: linear-gradient(180deg, #fff 0%, #fff 100%);
 }
 
-@keyframes landing-hero-shift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-    opacity: 0.12;
-  }
-  50% {
-    background-position: 100% 50%;
-    opacity: 0.18;
-  }
-}
-
-@keyframes landing-hero-drift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.85;
-  }
-  33% {
-    transform: translate(4%, 2%) scale(1.04);
-    opacity: 1;
-  }
-  66% {
-    transform: translate(-3%, 4%) scale(0.98);
-    opacity: 0.9;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .landing-hero-glow,
-  .landing-hero-glow::before,
-  .landing-hero-glow::after {
+  .landing-hero-mesh,
+  .landing-blob {
     animation: none;
   }
 
   .landing-ambient {
     transform: none;
+  }
+
+  .landing-hero {
+    background: linear-gradient(165deg, #e8eeff 0%, #ede9fe 100%);
   }
 }
 
@@ -201,9 +293,9 @@ html {
 .landing-mock {
   box-shadow:
     0 0 0 1px rgb(15 23 42 / 0.06),
-    0 25px 50px -12px rgb(15 23 42 / 0.12);
-  background: rgb(255 255 255 / 0.92);
-  backdrop-filter: blur(8px);
+    0 25px 50px -12px rgb(15 23 42 / 0.14);
+  background: rgb(255 255 255 / 0.88);
+  backdrop-filter: blur(12px);
 }
 
 .landing-cta-grid {
