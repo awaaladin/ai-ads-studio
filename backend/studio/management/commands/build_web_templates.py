@@ -31,6 +31,7 @@ STATIC_MAP = {
     'href="/favicon.svg"': 'href="{% static \'web/favicon.svg\' %}"',
     'href="/studio.css"': 'href="{% static \'web/studio.css\' %}"',
     'href="/landing.css"': 'href="{% static \'web/landing.css\' %}"',
+    'src="/landing.js"': 'src="{% static \'web/landing.js\' %}"',
     'href="/studio.css" />': 'href="{% static \'web/studio.css\' %}" />',
     'src="/config.js"': '',
     'src="/ui.js"': '',
@@ -103,6 +104,7 @@ class Command(BaseCommand):
         for name in (
             "studio.css",
             "landing.css",
+            "landing.js",
             "ui.js",
             "auth.js",
             "app.js",
@@ -194,6 +196,7 @@ class Command(BaseCommand):
             body_m = re.search(r"<body[^>]*>(.*)</body>", html, re.DOTALL | re.IGNORECASE)
             body = _patch(body_m.group(1).strip() if body_m else html)
             extra_head = ""
+            extra_js = ""
             if src_name == "landing.html":
                 extra_head = (
                     "{% block extra_head %}\n"
@@ -202,6 +205,11 @@ class Command(BaseCommand):
                     "  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\" />\n"
                     "{% endblock %}\n"
                     "{% block body_class %}bg-white min-h-screen{% endblock %}\n"
+                )
+                extra_js = (
+                    "{% block extra_js %}\n"
+                    "  <script src=\"{% static 'web/landing.js' %}\"></script>\n"
+                    "{% endblock %}\n"
                 )
             load_static = "{% load static %}\n" if src_name == "landing.html" else ""
             out = (
@@ -212,6 +220,7 @@ class Command(BaseCommand):
                 + "{% block body %}\n"
                 f"{body}\n"
                 "{% endblock %}\n"
+                + extra_js
             )
             (templates_dest / dest_name).write_text(out, encoding="utf-8")
             self.stdout.write(f"  simple: {dest_name}")
