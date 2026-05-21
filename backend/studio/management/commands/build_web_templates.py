@@ -71,6 +71,7 @@ def _patch(content: str) -> str:
     for old, new in STATIC_MAP.items():
         content = content.replace(old, new)
     content = re.sub(r"\n\s*\n\s*\n", "\n\n", content)
+    content = re.sub(r'<script\s*>\s*</script>\s*', "", content, flags=re.IGNORECASE)
     return content
 
 

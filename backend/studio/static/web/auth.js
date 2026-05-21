@@ -66,17 +66,14 @@
   }
 
   function switchPage(page) {
-    const el = document.getElementById(page);
-    if (!el) {
-      if (page === "signup") return goSignup();
-      if (page === "login") return goSignin();
+    if (page === "signup") {
+      goSignup();
       return false;
     }
-    document.querySelectorAll(".page").forEach(function (p) {
-      p.classList.remove("active");
-    });
-    el.classList.add("active");
-    window.scrollTo(0, 0);
+    if (page === "login") {
+      goSignin();
+      return false;
+    }
     return false;
   }
 
@@ -156,8 +153,8 @@
     if (!email || !password) return;
 
     const btn =
-      document.querySelector("#login button.bg-blue-accent") ||
-      document.querySelector("#login button[type=button].bg-blue-accent");
+      document.querySelector("#signin-panel button.bg-blue-accent") ||
+      document.querySelector("#signin-panel button[type=button].bg-blue-accent");
     if (!btn) return;
 
     const handler = async function (e) {
@@ -248,8 +245,8 @@
 
   function injectErrorSlots() {
     const loginForm =
-      document.querySelector("#login .max-w-\\[400px\\]") ||
-      document.querySelector("#login h1")?.parentElement;
+      document.querySelector("#signin-panel .max-w-\\[400px\\]") ||
+      document.querySelector("#signin-panel h1")?.parentElement;
     if (loginForm && !document.getElementById("login-error")) {
       const slot = document.createElement("div");
       slot.id = "login-error";
