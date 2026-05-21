@@ -15,10 +15,10 @@
 <body class="bg-gray-50 min-h-screen">
   <header class="border-b bg-white">
     <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/index.html" class="font-bold text-xl text-gray-900 no-underline">AI Ads Studio</a>
+      <a href="/" class="font-bold text-xl text-gray-900 no-underline">AI Ads Studio</a>
       <div>
-        <a href="/signin.html" class="text-sm text-gray-600 mr-4">Sign in</a>
-        <a href="/signup.html" class="text-sm font-semibold text-blue-600">Start free</a>
+        <a href="/signin/" class="text-sm text-gray-600 mr-4">Sign in</a>
+        <a href="/signup/" class="text-sm font-semibold text-blue-600">Start free</a>
       </div>
     </div>
   </header>
@@ -40,7 +40,7 @@
           <li>PDF download of every variant after generate</li>
           <li>Full REST API access (same as classrooms use)</li>
         </ul>
-        <a href="/signup.html" class="mt-8 block text-center py-3 rounded-lg border border-gray-200 font-semibold hover:bg-gray-50">Get started</a>
+        <a href="/signup/" class="mt-8 block text-center py-3 rounded-lg border border-gray-200 font-semibold hover:bg-gray-50 no-underline text-gray-900">Get started</a>
       </article>
       <article class="studio-card p-8 border-2 border-blue-600 relative">
         <span class="absolute -top-3 left-6 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">PRO</span>
@@ -62,6 +62,7 @@
 
   <script>
     (function () {
+      var btn = document.getElementById("btn-upgrade");
       if (window.StudioProduct) {
         window.StudioProduct.billingStatus()
           .then(function (b) {
@@ -70,15 +71,17 @@
           })
           .catch(function () {});
       }
-      document.getElementById("btn-upgrade").addEventListener("click", function () {
-        if (!window.StudioUI || !window.StudioUI.getToken()) {
-          window.location.href = "/signup.html";
-          return;
-        }
-        window.StudioProduct.startCheckout().catch(function (e) {
-          window.StudioUI.toast(e.message, "error");
+      if (btn) {
+        btn.addEventListener("click", function () {
+          if (!window.StudioUI || !window.StudioUI.getToken()) {
+            window.location.href = "/signup/";
+            return;
+          }
+          window.StudioProduct.startCheckout().catch(function (e) {
+            window.StudioUI.toast(e.message, "error");
+          });
         });
-      });
+      }
     })();
   </script>
 </body>

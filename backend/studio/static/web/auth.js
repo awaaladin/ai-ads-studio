@@ -5,36 +5,42 @@
   const UI = function () {
     return global.StudioUI;
   };
-  const PUBLIC = [
-    "/",
-    "/signin",
-    "/signup",
-    "/signin/",
-    "/signup/",
-    "/pricing",
-    "/pricing/",
-    "/verify-email",
-    "/verify-email/",
-    "/signin.html",
-    "/signup.html",
-    "/pricing.html",
-    "/verify-email.html",
-  ];
-
   function path() {
     return window.location.pathname.replace(/\/+$/, "") || "/";
   }
 
-  function isAuthPage() {
-    const p = path();
-    return PUBLIC.some(function (x) {
-      const bare = x.replace(/\/$/, "");
-      return p === bare || p.endsWith(bare) || p.endsWith(x);
-    });
-  }
-
   function isLanding() {
     return path() === "/" || path() === "";
+  }
+
+  function isSignInPage() {
+    const p = path();
+    return p === "/signin" || p.endsWith("/signin");
+  }
+
+  function isSignUpPage() {
+    const p = path();
+    return p === "/signup" || p.endsWith("/signup");
+  }
+
+  function isPricingPage() {
+    const p = path();
+    return p === "/pricing" || p.endsWith("/pricing");
+  }
+
+  function isVerifyEmailPage() {
+    const p = path();
+    return p === "/verify-email" || p.endsWith("/verify-email");
+  }
+
+  /** Pages that must not require login (pricing stays reachable when signed in). */
+  function isPublicPage() {
+    return isLanding() || isSignInPage() || isSignUpPage() || isPricingPage() || isVerifyEmailPage();
+  }
+
+  /** After login, only leave entry/auth pages — not pricing. */
+  function shouldRedirectLoggedInToApp() {
+    return isLanding() || isSignInPage() || isSignUpPage();
   }
 
   function isAppPage() {
@@ -91,7 +97,7 @@
   async function guard() {
     const loggedIn = await validateToken();
     if (loggedIn) {
-      if (isAuthPage() || isLanding()) goAppHome();
+      if (shouldRedirectLoggedInToApp()) goAppHome();
       return;
     }
     UI()?.clearAuth();
@@ -225,9 +231,7 @@
         return;
       }
 
-      const btn =
-        document.querySelector("#signup-form button[type=submit]") ||
-        document.querySelector("#signup button.bg-blue-accent");
+      const btn = document.querySelector("#signup-form button[type=submit]");
       ui.setButtonLoading(btn, true);
       try {
         await registerAndLogin(em, password.value, name?.value?.trim() || "");
@@ -239,12 +243,7 @@
     };
 
     const form = document.getElementById("signup-form");
-    if (form) {
-      form.addEventListener("submit", handler);
-      return;
-    }
-    const btn = document.querySelector("#signup button.bg-blue-accent");
-    if (btn) btn.addEventListener("click", handler);
+    if (form) form.addEventListener("submit", handler);
   }
 
   function injectErrorSlots() {
@@ -258,7 +257,7 @@
       slot.className = "text-sm text-red-600 mb-3 p-2 rounded bg-red-50";
       loginForm.insertBefore(slot, loginForm.children[2] || null);
     }
-    const signupH1 = document.querySelector("#signup h1") || document.querySelector("#signup-form h1");
+    const signupH1 = document.querySelector("#signup-form h1");
     if (signupH1 && !document.getElementById("signup-error")) {
       const slot = document.createElement("div");
       slot.id = "signup-error";

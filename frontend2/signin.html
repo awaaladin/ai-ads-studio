@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>AI Ads Studio – Auth</title>
+<title>AI Ads Studio – Sign in</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script>
@@ -33,8 +33,6 @@
 </script>
 <style>
   body { font-family: 'DM Sans', sans-serif; }
-  .page { display: none; }
-  .page.active { display: flex; }
   .hero-glow-top::before {
     content: '';
     position: absolute;
@@ -59,15 +57,12 @@
 </head>
 <body class="min-h-screen bg-navy text-white">
 
-<!-- LOGIN PAGE -->
-<div class="page active min-h-screen" id="login">
-  <div class="w-full min-h-screen grid grid-cols-1 md:grid-cols-2">
+<div class="min-h-screen w-full grid grid-cols-1 md:grid-cols-2" id="login">
 
     <!-- LEFT: form -->
     <div class="bg-white flex flex-col justify-center items-center px-7 py-20 md:px-12 relative">
 
-      <!-- Brand -->
-      <a href="#" class="absolute top-8 left-10 flex items-center gap-2.5 no-underline">
+      <a href="/" class="absolute top-8 left-10 flex items-center gap-2.5 no-underline">
         <div class="w-[34px] h-[34px] bg-blue-accent rounded-lg flex items-center justify-center text-white text-lg">✨</div>
         <div>
           <div class="font-syne font-bold text-[15px] text-gray-900 leading-none">AI Ads Studio</div>
@@ -79,75 +74,60 @@
         <h1 class="font-syne text-[32px] font-extrabold text-gray-900 mb-1.5">Sign in</h1>
         <p class="text-sm text-gray-500 mb-7">Enter your credentials to access your workspace.</p>
 
-        <!-- Social buttons -->
         <div class="flex gap-2.5 mb-5">
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="none"><path d="M21.8 12.2c0-.7-.06-1.4-.18-2H12v3.8h5.5a4.7 4.7 0 01-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.4 3.04-7.44z" fill="#4285F4"/><path d="M12 22c2.76 0 5.08-.9 6.77-2.46l-3.3-2.56c-.92.62-2.1.98-3.47.98-2.67 0-4.93-1.8-5.74-4.22H2.86v2.64A10 10 0 0012 22z" fill="#34A853"/><path d="M6.26 13.74A6.02 6.02 0 016 12c0-.6.1-1.18.26-1.74V7.62H2.86A10 10 0 002 12c0 1.6.38 3.12 1.06 4.46l3.2-2.72z" fill="#FBBC04"/><path d="M12 5.76a5.4 5.4 0 013.82 1.5l2.86-2.86A9.6 9.6 0 0012 2 10 10 0 002.86 7.62l3.4 2.64C7.07 7.56 9.33 5.76 12 5.76z" fill="#EA4335"/></svg>
+          <button type="button" class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
             Google
           </button>
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.46-1.1-1.46-.9-.62.07-.61.07-.61 1 .07 1.52 1.02 1.52 1.02.89 1.52 2.33 1.08 2.9.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.02-2.68-.1-.25-.44-1.27.1-2.64 0 0 .83-.27 2.73 1.02a9.5 9.5 0 012.48-.33c.84 0 1.69.11 2.48.33 1.9-1.29 2.73-1.02 2.73-1.02.54 1.37.2 2.39.1 2.64.64.7 1.02 1.59 1.02 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+          <button type="button" class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
             GitHub
           </button>
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.56c-.02-1.9 1.55-2.82 1.62-2.86-1.87-2.7-4.52-2.44-4.52-2.44-1.9-.1-3.73 1.1-4.7 1.1-.97 0-2.44-1.08-4.03-1.05-2.07.03-3.98 1.2-5.05 3.04-2.16 3.72-.55 9.23 1.54 12.26 1.04 1.48 2.26 3.14 3.87 3.08 1.55-.06 2.14-.99 4.01-.99 1.87 0 2.4.99 4.04.96 1.67-.03 2.73-1.5 3.76-2.99 1.18-1.7 1.67-3.36 1.69-3.44-.04-.02-3.23-1.23-3.26-4.87zM14.16 5.18c.87-1.04 1.45-2.48 1.29-3.93-1.25.05-2.76.83-3.65 1.87-.8.92-1.5 2.38-1.31 3.79 1.39.1 2.8-.68 3.67-1.73z"/></svg>
+          <button type="button" class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
             Apple
           </button>
         </div>
 
-        <!-- Divider -->
         <div class="flex items-center gap-2.5 my-1 mb-5 text-[#aab0bb] text-xs tracking-widest font-medium before:content-[''] before:flex-1 before:h-px before:bg-gray-200 after:content-[''] after:flex-1 after:h-px after:bg-gray-200">
           OR WITH EMAIL
         </div>
 
-        <!-- Email -->
         <label class="block text-[13.5px] font-semibold text-gray-700 mb-1.5" for="login-email">Email</label>
         <div class="relative mb-4">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6"/></svg>
-          </span>
-          <input type="email" id="login-email" placeholder="you@company.com"
-            class="w-full py-3 pr-3.5 pl-10 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
+          <input type="email" id="login-email" placeholder="you@company.com" autocomplete="email"
+            class="w-full py-3 pr-3.5 pl-3.5 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
         </div>
 
-        <!-- Password -->
         <label class="block text-[13.5px] font-semibold text-gray-700 mb-1.5" for="login-pw">Password</label>
         <div class="relative mb-4">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          </span>
-          <input type="password" id="login-pw" placeholder="••••••••"
-            class="w-full py-3 pr-10 pl-10 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
-          <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-400 p-0.5" onclick="togglePw('login-pw',this)" type="button">
+          <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password"
+            class="w-full py-3 pr-10 pl-3.5 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
+          <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-400 p-0.5" onclick="togglePw('login-pw',this)" type="button" aria-label="Show password">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
 
-        <!-- Remember + Forgot -->
         <div class="flex items-center justify-between mb-[18px]">
           <label class="flex items-center gap-2 text-[13.5px] text-gray-700 cursor-pointer">
-            <input type="checkbox" checked class="accent-blue-accent w-4 h-4 cursor-pointer"> Remember me for 30 days
+            <input type="checkbox" checked class="accent-blue-accent w-4 h-4 cursor-pointer"> Remember me
           </label>
           <a href="#" class="text-[13.5px] text-blue-accent font-medium no-underline hover:underline">Forgot?</a>
         </div>
 
-        <!-- CTA -->
-        <button type="button" class="w-full py-[13px] bg-blue-accent text-white border-none rounded-[10px] text-[15px] font-semibold font-dm cursor-pointer flex items-center justify-center gap-2 transition hover:bg-blue-hover hover:shadow-[0_4px_18px_rgba(37,99,235,.35)]">
+        <button type="button" class="w-full py-[13px] bg-blue-accent text-white border-none rounded-[10px] text-[15px] font-semibold font-dm cursor-pointer flex items-center justify-center gap-2 transition hover:bg-blue-hover">
           Sign in
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
 
         <p class="text-center mt-[22px] text-[13.5px] text-gray-500">
-          Don't have an account? <a href="/signup/" onclick="switchPage('signup'); return false;" class="text-blue-accent font-semibold no-underline hover:underline">Create one — it's free</a>
+          Don't have an account?
+          <a href="/signup/" class="text-blue-accent font-semibold no-underline hover:underline">Create one — it's free</a>
         </p>
       </div>
     </div>
 
     <!-- RIGHT: hero -->
-    <div class="hidden md:flex flex-col justify-center px-14 py-16 relative overflow-hidden hero-glow-top hero-glow-bottom"
+    <div class="hidden md:flex flex-col justify-center px-14 py-16 relative overflow-hidden hero-glow-top hero-glow-bottom min-h-screen"
          style="background: linear-gradient(145deg, #0d1117 0%, #0f1e3d 50%, #0d1117 100%);">
 
-      <!-- Brand -->
       <div class="flex items-center gap-3 mb-3.5 relative z-10">
         <div class="w-[38px] h-[38px] bg-blue-accent rounded-[9px] flex items-center justify-center text-white text-xl">✨</div>
         <div>
@@ -156,7 +136,6 @@
         </div>
       </div>
 
-      <!-- Badge -->
       <div class="inline-flex items-center gap-1.5 bg-blue-accent/15 border border-blue-accent/30 rounded-full px-3.5 py-1.5 text-xs text-[#93b4ff] font-medium mb-8 w-fit relative z-10">
         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
         WELCOME BACK
@@ -168,230 +147,8 @@
       <p class="text-[15px] text-[#8898b8] leading-[1.65] mb-9 max-w-[380px] relative z-10">
         Sign in to pick up where you left off — your AI co-pilot has new suggestions ready.
       </p>
-
-      <!-- Features -->
-      <div class="flex flex-col gap-3 relative z-10">
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">⚡</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Generate ads in seconds</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">6+ variants per brief, tuned to your audience</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">📈</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Auto-optimized campaigns</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">AI shifts spend to your top performers</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">🛡</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Brand-safe by default</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">Guardrails keep your voice consistent</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rating -->
-      <div class="flex items-center gap-3.5 mt-9 relative z-10">
-        <div class="flex">
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white" style="background: linear-gradient(135deg, #4f8ef7, #a855f7)">A</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #f472b6, #fb923c)">B</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #2dd4bf, #3b82f6)">C</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #fb923c, #f59e0b)">D</div>
-        </div>
-        <div>
-          <div class="text-yellow-400 text-[13px] tracking-wide">★★★★★ <span class="font-bold text-[#e8eeff]">4.9</span></div>
-          <div class="text-[12.5px] text-[#8898b8]">Loved by 12,000+ marketers</div>
-        </div>
-      </div>
     </div>
 
-  </div>
 </div>
-
-
-<!-- SIGNUP PAGE -->
-<div class="page min-h-screen" id="signup">
-  <div class="w-full min-h-screen grid grid-cols-1 md:grid-cols-2">
-
-    <!-- LEFT: form -->
-    <div class="bg-white flex flex-col justify-center items-center px-7 py-20 md:px-12 relative">
-
-      <!-- Brand -->
-      <a href="#" class="absolute top-8 left-10 flex items-center gap-2.5 no-underline">
-        <div class="w-[34px] h-[34px] bg-blue-accent rounded-lg flex items-center justify-center text-white text-lg">✨</div>
-        <div>
-          <div class="font-syne font-bold text-[15px] text-gray-900 leading-none">AI Ads Studio</div>
-          <div class="text-[10px] text-gray-400 tracking-widest font-medium uppercase">Generate · Launch · Win</div>
-        </div>
-      </a>
-
-      <div class="w-full max-w-[400px]">
-        <h1 class="font-syne text-[32px] font-extrabold text-gray-900 mb-1.5">Create your account</h1>
-        <p class="text-sm text-gray-500 mb-7">Start generating ads in under 2 minutes. No credit card required.</p>
-
-        <!-- Social buttons -->
-        <div class="flex gap-2.5 mb-5">
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="none"><path d="M21.8 12.2c0-.7-.06-1.4-.18-2H12v3.8h5.5a4.7 4.7 0 01-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.4 3.04-7.44z" fill="#4285F4"/><path d="M12 22c2.76 0 5.08-.9 6.77-2.46l-3.3-2.56c-.92.62-2.1.98-3.47.98-2.67 0-4.93-1.8-5.74-4.22H2.86v2.64A10 10 0 0012 22z" fill="#34A853"/><path d="M6.26 13.74A6.02 6.02 0 016 12c0-.6.1-1.18.26-1.74V7.62H2.86A10 10 0 002 12c0 1.6.38 3.12 1.06 4.46l3.2-2.72z" fill="#FBBC04"/><path d="M12 5.76a5.4 5.4 0 013.82 1.5l2.86-2.86A9.6 9.6 0 0012 2 10 10 0 002.86 7.62l3.4 2.64C7.07 7.56 9.33 5.76 12 5.76z" fill="#EA4335"/></svg>
-            Google
-          </button>
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.46-1.1-1.46-.9-.62.07-.61.07-.61 1 .07 1.52 1.02 1.52 1.02.89 1.52 2.33 1.08 2.9.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.02-2.68-.1-.25-.44-1.27.1-2.64 0 0 .83-.27 2.73 1.02a9.5 9.5 0 012.48-.33c.84 0 1.69.11 2.48.33 1.9-1.29 2.73-1.02 2.73-1.02.54 1.37.2 2.39.1 2.64.64.7 1.02 1.59 1.02 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
-            GitHub
-          </button>
-          <button class="flex-1 flex items-center justify-center gap-2 px-3.5 py-[11px] border border-[#e2e6ea] rounded-[10px] bg-white text-[13.5px] font-medium text-gray-900 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors font-dm">
-            <svg class="w-[17px] h-[17px] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.56c-.02-1.9 1.55-2.82 1.62-2.86-1.87-2.7-4.52-2.44-4.52-2.44-1.9-.1-3.73 1.1-4.7 1.1-.97 0-2.44-1.08-4.03-1.05-2.07.03-3.98 1.2-5.05 3.04-2.16 3.72-.55 9.23 1.54 12.26 1.04 1.48 2.26 3.14 3.87 3.08 1.55-.06 2.14-.99 4.01-.99 1.87 0 2.4.99 4.04.96 1.67-.03 2.73-1.5 3.76-2.99 1.18-1.7 1.67-3.36 1.69-3.44-.04-.02-3.23-1.23-3.26-4.87zM14.16 5.18c.87-1.04 1.45-2.48 1.29-3.93-1.25.05-2.76.83-3.65 1.87-.8.92-1.5 2.38-1.31 3.79 1.39.1 2.8-.68 3.67-1.73z"/></svg>
-            Apple
-          </button>
-        </div>
-
-        <!-- Divider -->
-        <div class="flex items-center gap-2.5 my-1 mb-5 text-[#aab0bb] text-xs tracking-widest font-medium before:content-[''] before:flex-1 before:h-px before:bg-gray-200 after:content-[''] after:flex-1 after:h-px after:bg-gray-200">
-          OR WITH EMAIL
-        </div>
-
-        <!-- Full Name -->
-        <label class="block text-[13.5px] font-semibold text-gray-700 mb-1.5" for="signup-name">Full name</label>
-        <div class="relative mb-4">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          </span>
-          <input type="text" id="signup-name" placeholder="Alex Morgan"
-            class="w-full py-3 pr-3.5 pl-10 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
-        </div>
-
-        <!-- Work Email -->
-        <label class="block text-[13.5px] font-semibold text-gray-700 mb-1.5" for="signup-email">Work email</label>
-        <div class="relative mb-4">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8l10 6 10-6"/></svg>
-          </span>
-          <input type="email" id="signup-email" placeholder="you@company.com"
-            class="w-full py-3 pr-3.5 pl-10 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
-        </div>
-
-        <!-- Password -->
-        <label class="block text-[13.5px] font-semibold text-gray-700 mb-1.5" for="signup-pw">Password</label>
-        <div class="relative mb-4">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          </span>
-          <input type="password" id="signup-pw" placeholder="At least 8 characters"
-            class="w-full py-3 pr-10 pl-10 border border-gray-200 rounded-[10px] text-sm font-dm text-gray-900 bg-white outline-none transition focus:border-blue-accent focus:ring-2 focus:ring-blue-accent/10 placeholder-gray-400">
-          <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-400 p-0.5" onclick="togglePw('signup-pw',this)" type="button">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-
-        <!-- Terms -->
-        <div class="flex items-start gap-2.5 mb-5 text-[13.5px] text-gray-700">
-          <input type="checkbox" id="terms" class="mt-0.5 accent-blue-accent w-[15px] h-[15px] cursor-pointer flex-shrink-0">
-          <label for="terms" class="font-normal cursor-pointer">I agree to the <a href="#" class="text-blue-accent no-underline hover:underline">Terms</a> and <a href="#" class="text-blue-accent no-underline hover:underline">Privacy Policy</a>.</label>
-        </div>
-
-        <!-- CTA -->
-        <button class="w-full py-[13px] bg-blue-accent text-white border-none rounded-[10px] text-[15px] font-semibold font-dm cursor-pointer flex items-center justify-center gap-2 transition hover:bg-blue-hover hover:shadow-[0_4px_18px_rgba(37,99,235,.35)]">
-          Create account
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-
-        <p class="text-center mt-[22px] text-[13.5px] text-gray-500">
-          Already have an account? <a href="/signin/" onclick="switchPage('login'); return false;" class="text-blue-accent font-semibold no-underline hover:underline">Sign in</a>
-        </p>
-      </div>
-    </div>
-
-    <!-- RIGHT: hero -->
-    <div class="hidden md:flex flex-col justify-center px-14 py-16 relative overflow-hidden hero-glow-top hero-glow-bottom"
-         style="background: linear-gradient(145deg, #0d1117 0%, #0f1e3d 50%, #0d1117 100%);">
-
-      <!-- Brand -->
-      <div class="flex items-center gap-3 mb-3.5 relative z-10">
-        <div class="w-[38px] h-[38px] bg-blue-accent rounded-[9px] flex items-center justify-center text-white text-xl">✨</div>
-        <div>
-          <div class="font-syne font-bold text-[16px] text-[#e8eeff] leading-none">AI Ads Studio</div>
-          <div class="text-[10px] text-[#5a6a8a] tracking-[.1em] font-medium uppercase mt-0.5">Generate · Launch · Win</div>
-        </div>
-      </div>
-
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-1.5 bg-blue-accent/15 border border-blue-accent/30 rounded-full px-3.5 py-1.5 text-xs text-[#93b4ff] font-medium mb-8 w-fit relative z-10">
-        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-        FREE 14-DAY TRIAL
-      </div>
-
-      <h2 class="font-syne text-4xl font-extrabold text-[#e8eeff] leading-[1.12] mb-4 relative z-10">
-        From idea to live campaign in <span class="text-blue-accent">5 minutes.</span>
-      </h2>
-      <p class="text-[15px] text-[#8898b8] leading-[1.65] mb-9 max-w-[380px] relative z-10">
-        Join 12,000+ marketers using AI Ads Studio to ship faster, learn quicker, and grow smarter.
-      </p>
-
-      <!-- Features -->
-      <div class="flex flex-col gap-3 relative z-10">
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">⚡</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Generate ads in seconds</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">6+ variants per brief, tuned to your audience</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">📈</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Auto-optimized campaigns</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">AI shifts spend to your top performers</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3.5 bg-white/[.04] border border-white/[.07] rounded-xl p-3.5 transition hover:bg-white/[.07]">
-          <div class="w-9 h-9 flex-shrink-0 rounded-[9px] bg-blue-accent/[.12] border border-blue-accent/20 flex items-center justify-center text-[#5b9bff] text-base">🛡</div>
-          <div>
-            <div class="text-sm font-semibold text-[#dce6ff] mb-0.5">Brand-safe by default</div>
-            <div class="text-[12.5px] text-[#6b7e9e]">Guardrails keep your voice consistent</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rating -->
-      <div class="flex items-center gap-3.5 mt-9 relative z-10">
-        <div class="flex">
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white" style="background: linear-gradient(135deg, #4f8ef7, #a855f7)">A</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #f472b6, #fb923c)">B</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #2dd4bf, #3b82f6)">C</div>
-          <div class="w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[11px] font-bold text-white -ml-2" style="background: linear-gradient(135deg, #fb923c, #f59e0b)">D</div>
-        </div>
-        <div>
-          <div class="text-yellow-400 text-[13px] tracking-wide">★★★★★ <span class="font-bold text-[#e8eeff]">4.9</span></div>
-          <div class="text-[12.5px] text-[#8898b8]">Loved by 12,000+ marketers</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-  function switchPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
-    window.scrollTo(0, 0);
-    return false;
-  }
-
-  function togglePw(id, btn) {
-    const inp = document.getElementById(id);
-    const show = inp.type === 'password';
-    inp.type = show ? 'text' : 'password';
-    btn.innerHTML = show
-      ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-      : `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-  }
-</script>
-  <script src="/nav.js"></script>
 </body>
 </html>
-

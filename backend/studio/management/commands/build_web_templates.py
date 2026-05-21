@@ -10,8 +10,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 URL_MAP = {
-    'href="signup.html"': 'href="{% url \'web-signup\' %}" onclick="switchPage(\'signup\'); return false;"',
-    'href="signin.html"': 'href="{% url \'web-signin\' %}" onclick="switchPage(\'login\'); return false;"',
+    'href="signup.html"': 'href="{% url \'web-signup\' %}"',
+    'href="signin.html"': 'href="{% url \'web-signin\' %}"',
     'href="/index.html"': 'href="{% url \'web-home\' %}"',
     'href="/signin.html"': 'href="{% url \'web-signin\' %}"',
     'href="/signup.html"': 'href="{% url \'web-signup\' %}"',
